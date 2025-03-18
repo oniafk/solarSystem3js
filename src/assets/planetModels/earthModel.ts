@@ -10,17 +10,23 @@ export class earthModel {
   planetClouds: string;
   planetLights: string;
   planetCloudsMesh: THREE.Mesh;
+  moonMesh: THREE.Mesh;
+  moonMap: string;
+  moonTexture: string;
 
   constructor(planetSize: number = 1, baseRadius: number = 5) {
     this.planetMap = "./images/2k_earth_daymap.jpg";
     this.planetTexture = "./images/earthbump1k.jpg";
     this.planetClouds = "./images/2k_earth_clouds.jpg";
     this.planetLights = "./images/2k_earth_nightmap.jpg";
+    this.moonMap = "./images/moonmap4k.jpg";
+    this.moonTexture = "./images/moonbump4k.jpg";
     this.group = new THREE.Group();
     this.baseRadius = baseRadius;
+    this.moonMesh = new THREE.Mesh();
 
     this.createEart();
-
+    this.createMoon();
     this.group.scale.set(planetSize, planetSize, planetSize);
   }
 
@@ -105,12 +111,46 @@ export class earthModel {
 
     this.group.add(planetGlowMesh);
 
-    this.group.rotation.z = 25 * (Math.PI / 180); // Convert 25 degrees to radians
+    this.group.rotation.z = 25 * (Math.PI / 180);
   }
 
-  animatePlanet(delta = 0.002) {
+  createMoon() {
+    const moonTexture = this.loader.load(this.moonMap);
+    const moonBump = this.loader.load(this.moonTexture);
+
+    const moonGeometry = new THREE.IcosahedronGeometry(0.18, 8);
+    const moonMaterial = new THREE.MeshStandardMaterial({
+      map: moonTexture,
+    });
+    this.moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
+    this.moonMesh.position.set(1.5, 0, 0);
+
+    const moonBumpGeometry = new THREE.IcosahedronGeometry(0.18, 8);
+    const moonBumpMaterial = new THREE.MeshStandardMaterial({
+      map: moonBump,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      opacity: 0.4,
+    });
+    const moonBumpMesh = new THREE.Mesh(moonBumpGeometry, moonBumpMaterial);
+    moonBumpMesh.position.set(1, 0, 0);
+
+    this.group.add(this.moonMesh);
+    this.group.add(moonBumpMesh);
+
+    // moon orbit
+    const moonOrbit = new THREE.Group();
+    moonOrbit.add(this.moonMesh);
+    moonOrbit.add(moonBumpMesh);
+    moonOrbit.position.set(0, 0, 0);
+    this.group.add(moonOrbit);
+
+    this.moonMesh.rotation.z = 50 * (Math.PI / 180);
+  }
+
+  animatePlanet(delta = 0.005) {
     this.group.rotation.y += delta;
-    this.planetCloudsMesh.rotation.y += 0.0020001;
+    this.planetCloudsMesh.rotation.y += 0.0050001;
   }
 
   setSize(planetSize: number) {
