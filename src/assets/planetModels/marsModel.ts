@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { getFresnelMat } from "../getFrenelMaterial";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 export class marsModel {
   group;
@@ -7,6 +8,7 @@ export class marsModel {
   loader = new THREE.TextureLoader();
   planetMap: string;
   planetTexture: string;
+  moonOrbits: THREE.Group[] = [];
 
   constructor(planetSize: number = 1, baseRadius: number = 5) {
     this.planetMap = "./images/2k_mars.jpg";
@@ -15,6 +17,7 @@ export class marsModel {
     this.baseRadius = baseRadius;
 
     this.createMars();
+    this.createMoons();
 
     this.group.scale.set(planetSize, planetSize, planetSize);
   }
@@ -64,8 +67,40 @@ export class marsModel {
     this.group.add(planetAtmosphereMesh);
   }
 
-  animateMars() {
-    this.group.rotation.y += 0.002;
+  createMoons() {
+    const loader = new GLTFLoader();
+
+    const moon1Orbit = new THREE.Group();
+    this.moonOrbits.push(moon1Orbit);
+    this.group.add(moon1Orbit);
+
+    const moon2Orbit = new THREE.Group();
+    this.moonOrbits.push(moon2Orbit);
+    this.group.add(moon2Orbit);
+
+    moon1Orbit.rotation.x = 25 * (Math.PI / 180);
+    moon2Orbit.rotation.x = -35 * (Math.PI / 180);
+
+    loader.load("models/rock01.glb", (gltf) => {
+      gltf.scene.scale.set(0.2, 0.2, 0.2);
+      gltf.scene.position.set(1.01, 0, 0);
+      moon1Orbit.add(gltf.scene);
+    });
+
+    loader.load("models/rock02.glb", (gltf) => {
+      gltf.scene.scale.set(0.2, 0.2, 0.2);
+      gltf.scene.position.set(1.2, 0, 0);
+      moon2Orbit.add(gltf.scene);
+    });
+  }
+
+  animateMars(delta = 0.002) {
+    this.group.rotation.y += delta;
+
+    if (this.moonOrbits.length >= 2) {
+      this.moonOrbits[0].rotation.y += delta * 2.5;
+      this.moonOrbits[1].rotation.y -= delta * 1.8;
+    }
   }
 
   setSize(size: number) {
