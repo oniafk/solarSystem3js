@@ -52,16 +52,14 @@ export class uranusModel {
   createRing() {
     const ringTexture = this.loader.load(this.ringTexture);
 
-    // Fix the ring geometry parameters
-    // Parameters: innerRadius, outerRadius, thetaSegments, phiSegments
-    const innerRadius = this.baseRadius * 1.4; // Start ring at 1.3x planet radius
-    const outerRadius = this.baseRadius * 1.7; // End at 2.5x planet radius
+    const innerRadius = this.baseRadius * 1.4;
+    const outerRadius = this.baseRadius * 1.7;
 
     const ringGeometry = new THREE.RingGeometry(
-      innerRadius, // Inner radius - make this larger for bigger interior space
-      outerRadius, // Outer radius - make this larger for wider rings
-      64, // Theta segments (detail around the ring)
-      8 // Phi segments (detail from inner to outer edge)
+      innerRadius,
+      outerRadius,
+      64,
+      8
     );
 
     const pos = ringGeometry.attributes.position;
@@ -71,13 +69,10 @@ export class uranusModel {
     for (let i = 0; i < pos.count; i++) {
       v3.fromBufferAttribute(pos, i);
 
-      // Calculate normalized radius (0 at inner edge, 1 at outer edge)
-      // Use the actual inner and outer radii we defined above
       const radius = v3.length();
       const normalizedRadius =
         (radius - innerRadius) / (outerRadius - innerRadius);
 
-      // Map to UV coordinates (u around the ring, v from inner to outer)
       const theta = Math.atan2(v3.y, v3.x);
       const u = (theta + Math.PI) / (Math.PI * 2);
       const v = normalizedRadius;
@@ -85,23 +80,24 @@ export class uranusModel {
       uv.setXY(i, v, u);
     }
 
-    // Create material for the ring - use Saturn rings texture
     const ringMaterial = new THREE.MeshStandardMaterial({
       map: ringTexture,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.5, // Slightly transparent
-      depthWrite: false, // Important for transparent objects
-      roughness: 0.8, // Slightly rough appearance
-      metalness: 0.2, // Low metalness
+      opacity: 0.5,
+      depthWrite: false,
+      roughness: 0.8,
+      metalness: 0.2,
     });
 
     const ring = new THREE.Mesh(ringGeometry, ringMaterial);
     ring.rotation.x = Math.PI / 2;
     this.group.add(ring);
+
+    this.group.rotation.z = 70 * (Math.PI / 180);
   }
 
-  animateUranus(delta = 0.002) {
+  animateUranus(delta = 0.008) {
     this.group.rotation.y += delta;
   }
 
