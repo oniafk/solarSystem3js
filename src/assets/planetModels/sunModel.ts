@@ -8,15 +8,14 @@ export class SunModel {
   sunTexture1: string;
   sunTexture2: string;
 
-  constructor(sunSize: number = 1, baseRadius: number = 5) {
+  constructor(sunSize: number = 1, baseRadius: number = 50) {
     this.sunTexture2 = "./images/sunmap.jpg";
     this.sunTexture1 = "./images/2k_sun.jpg";
     this.group = new THREE.Group();
-    this.baseRadius = baseRadius; // Store base radius
+    this.baseRadius = baseRadius;
 
     this.createSun();
 
-    // Apply overall scaling
     this.group.scale.set(sunSize, sunSize, sunSize);
   }
 
@@ -24,7 +23,6 @@ export class SunModel {
     const sunMap = this.loader.load(this.sunTexture1);
     const sunMap2 = this.loader.load(this.sunTexture2);
 
-    // Base sun sphere - use the baseRadius parameter
     const sunGeometry = new THREE.IcosahedronGeometry(this.baseRadius, 8);
     const sunMaterial = new THREE.MeshStandardMaterial({
       map: sunMap,
@@ -32,7 +30,6 @@ export class SunModel {
     const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
     this.group.add(sunMesh);
 
-    // Fire layer - maintain 1% larger than base radius
     const sunFireGeometry = new THREE.IcosahedronGeometry(
       this.baseRadius * 1.01,
       8
@@ -46,9 +43,8 @@ export class SunModel {
     const sunFireMesh = new THREE.Mesh(sunFireGeometry, sunFireMaterial);
     this.group.add(sunFireMesh);
 
-    // Glow layer - maintain 2% larger than base radius
     const sunGlowGeometry = new THREE.IcosahedronGeometry(
-      this.baseRadius * 1.02,
+      this.baseRadius * 1.01,
       8
     );
     const sunGlowMaterial = getFresnelMat({
@@ -60,7 +56,7 @@ export class SunModel {
     });
     const sunGlowMesh = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
 
-    sunGlowMesh.scale.set(1.2, 1.2, 1.2);
+    sunGlowMesh.scale.set(1.05, 1.05, 1.05);
     this.group.add(sunGlowMesh);
   }
 
