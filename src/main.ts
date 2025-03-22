@@ -42,8 +42,12 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 //* Base lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
 scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 1000);
+pointLight.position.set(0, 0, 0);
+scene.add(pointLight);
 
 const starField = getStarfield({ numStars: 5000 });
 scene.add(starField);
@@ -60,11 +64,14 @@ const sun = new SunModel(1, sunSize);
 const sunMesh = sun.getSun();
 solarSystem.add(sunMesh);
 
-function createOrbitPath(radius: number) {
+function createOrbitPath(
+  radius: number,
+  color: number | string | THREE.Color = 0x444444
+) {
   const curve = new THREE.EllipseCurve(0, 0, radius, radius);
   const points = curve.getPoints(100);
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  const material = new THREE.LineBasicMaterial({ color: 0x444444 });
+  const material = new THREE.LineBasicMaterial({ color: color });
   const ellipse = new THREE.Line(geometry, material);
   ellipse.rotation.x = Math.PI / 2;
   return ellipse;
@@ -89,14 +96,14 @@ solarSystem.add(saturnOrbit);
 solarSystem.add(uranusOrbit);
 solarSystem.add(neptuneOrbit);
 
-solarSystem.add(createOrbitPath(4.1 + sunSize));
-solarSystem.add(createOrbitPath(7.7 + sunSize));
-solarSystem.add(createOrbitPath(10.7 + sunSize));
-solarSystem.add(createOrbitPath(16.3 + sunSize));
-solarSystem.add(createOrbitPath(55.8 + sunSize));
-solarSystem.add(createOrbitPath(102.4 + sunSize));
-solarSystem.add(createOrbitPath(204.9 + sunSize));
-solarSystem.add(createOrbitPath(319.7 + sunSize));
+solarSystem.add(createOrbitPath(4.1 + sunSize, 0xe9edde));
+solarSystem.add(createOrbitPath(7.7 + sunSize, 0xf2b70e));
+solarSystem.add(createOrbitPath(10.7 + sunSize, 0x0088ff));
+solarSystem.add(createOrbitPath(16.3 + sunSize, 0xf2b70e));
+solarSystem.add(createOrbitPath(55.8 + sunSize, 0xecebd6));
+solarSystem.add(createOrbitPath(102.4 + sunSize, 0xecebd6));
+solarSystem.add(createOrbitPath(204.9 + sunSize, 0x71e6ec));
+solarSystem.add(createOrbitPath(319.7 + sunSize, 0x5cbdc2));
 
 //* Create planets and add them to their orbits
 const mercury = new mercuryModel(1, 0.35);

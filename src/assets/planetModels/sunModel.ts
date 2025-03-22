@@ -39,6 +39,8 @@ export class SunModel {
       transparent: true,
       blending: THREE.AdditiveBlending,
       opacity: 0.7,
+      emissive: 0xf19504,
+      emissiveIntensity: 5,
     });
     const sunFireMesh = new THREE.Mesh(sunFireGeometry, sunFireMaterial);
     this.group.add(sunFireMesh);
@@ -58,6 +60,14 @@ export class SunModel {
 
     sunGlowMesh.scale.set(1.05, 1.05, 1.05);
     this.group.add(sunGlowMesh);
+
+    const sunLight = new THREE.PointLight(0xffffff, 20000);
+    sunLight.position.set(0, 0, 0);
+    this.group.add(sunLight);
+
+    sunMesh.castShadow = false;
+    sunFireMesh.castShadow = false;
+    sunGlowMesh.castShadow = false;
   }
 
   animateSun(delta = 0.002) {

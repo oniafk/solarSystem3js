@@ -24,6 +24,7 @@ export class earthModel {
     this.group = new THREE.Group();
     this.baseRadius = baseRadius;
     this.moonMesh = new THREE.Mesh();
+    this.planetCloudsMesh = new THREE.Mesh();
 
     this.createEart();
     this.createMoon();
